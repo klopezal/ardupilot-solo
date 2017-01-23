@@ -1801,7 +1801,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         }
         break;
 
-#if HAL_CPU_CLASS > HAL_CPU_CLASS_16
+
     case MAVLINK_MSG_ID_SERIAL_CONTROL:
         handle_serial_control(msg, gps);
         break;
@@ -1811,7 +1811,10 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         result = MAV_RESULT_ACCEPTED;
         break;
 
-#endif
+    case MAVLINK_MSG_ID_GPS_RTCM_DATA:
+        handle_gps_rtcm(msg,gps);
+        result = MAV_RESULT_ACCEPTED;
+        break;
 
 #if CAMERA == ENABLED
     case MAVLINK_MSG_ID_DIGICAM_CONFIGURE:      // MAV ID: 202

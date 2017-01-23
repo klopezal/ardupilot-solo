@@ -17,6 +17,7 @@
 #ifndef __AP_GPS_H__
 #define __AP_GPS_H__
 
+
 #include <AP_HAL.h>
 #include <inttypes.h>
 #include <AP_Progmem.h>
@@ -28,21 +29,15 @@
 #include "GPS_detect_state.h"
 #include "../AP_SerialManager/AP_SerialManager.h"
 
+
 /**
    maximum number of GPS instances available on this platform. If more
    than 1 then redundent sensors may be available
  */
-#if HAL_CPU_CLASS > HAL_CPU_CLASS_16
-#define GPS_MAX_INSTANCES 2
-#else
-#define GPS_MAX_INSTANCES 1
-#endif
 
-#if HAL_CPU_CLASS >= HAL_CPU_CLASS_75
+#define GPS_MAX_INSTANCES 2
 #define GPS_RTK_AVAILABLE 1
-#else
-#define GPS_RTK_AVAILABLE 0
-#endif
+#define MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN 180
 
 /**
  * save flash by skipping NMEA and SIRF support on ArduCopter on APM1/2 or any frame type on AVR1280 CPUs
@@ -138,6 +133,9 @@ public:
         bool have_vertical_accuracy:1;
         uint32_t last_gps_time_ms;          ///< the system time we got the last GPS timestamp, milliseconds
     };
+
+    // Pass mavlink data to message handlers (for MAV type)
+    void handle_msg(const mavlink_message_t *msg);
 
     // Accessor functions
 
@@ -407,6 +405,35 @@ private:
 
     void detect_instance(uint8_t instance);
     void update_instance(uint8_t instance);
+
+    /*
+      buffer for re-assembling RTCM data for GPS injection. 
+      The 8 bit flags field in GPS_RTCM_DATA is interpreted as:
+              1 bit for "is fragmented"
+              2 bits for fragment number
+              5 bits for sequence number
+
+      The rtcm_buffer is allocated on first use. Once a block of data
+      is successfully reassembled it is injected into all active GPS
+      backends. This assumes we don't want more than 4*180=720 bytes
+      in a RTCM data block
+     */
+    struct rtcm_buffer {
+        uint8_t fragments_received:4;
+        uint8_t sequence:5;
+        uint8_t fragment_count;
+        uint16_t total_length;
+        uint8_t buffer[MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN*4];
+    } *rtcm_buffer;
+
+    // re-assemble GPS_RTCM_DATA message
+    void handle_gps_rtcm_data(const mavlink_message_t *msg);
+
+    // inject data into all backends
+    void inject_data_all(uint8_t *data, uint16_t len);
+
+
+
 };
 
 #include <GPS_Backend.h>

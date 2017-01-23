@@ -34,6 +34,11 @@
 #define MAVLINK_END_UART_SEND(chan, length)
 #endif
 
+#ifndef MAVLINK_CRC_EXTRA
+#define MAVLINK_CRC_EXTRA 1
+#endif
+
+
 /* option to provide alternative implementation of mavlink_helpers.h */
 #ifdef MAVLINK_SEPARATE_HELPERS
 

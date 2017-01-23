@@ -2,6 +2,16 @@
 
 ifneq ($(PX4_ROOT),)
 
+PX4FIRMWARE_DIRECTORY ?= $(SKETCHBOOK)/modules/PX4Firmware
+PX4NUTTX_DIRECTORY ?= $(SKETCHBOOK)/modules/PX4NuttX
+UAVCAN_DIRECTORY ?= $(SKETCHBOOK)/modules/uavcan
+
+PX4_ROOT := $(shell cd $(PX4FIRMWARE_DIRECTORY) && pwd)
+NUTTX_ROOT := $(shell cd $(PX4NUTTX_DIRECTORY) && pwd)
+NUTTX_SRC := $(NUTTX_ROOT)/nuttx/
+UAVCAN_DIR=$(shell cd $(UAVCAN_DIRECTORY) && pwd)/
+
+
 # cope with relative paths
 ifeq ($(wildcard $(PX4_ROOT)/nuttx-configs),)
 PX4_ROOT := $(shell cd $(SKETCHBOOK)/$(PX4_ROOT) && pwd)

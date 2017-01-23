@@ -310,6 +310,7 @@ private:
     void handle_r10c_gimbal_report(AP_Mount &mount, mavlink_message_t *msg) const;
 
     void handle_gps_inject(const mavlink_message_t *msg, AP_GPS &gps);
+    void handle_gps_rtcm(const mavlink_message_t *msg, AP_GPS &gps);
 
     void handle_remote_log_status(const mavlink_message_t *msg, DataFlash_MAVLink &DataFlash);
 

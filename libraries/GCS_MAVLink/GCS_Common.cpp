@@ -813,6 +813,14 @@ GCS_MAVLINK::handle_gps_inject(const mavlink_message_t *msg, AP_GPS &gps)
 
 }
 
+void 
+GCS_MAVLINK::handle_gps_rtcm(const mavlink_message_t *msg, AP_GPS &gps)
+{
+
+    gps.handle_msg(msg);
+
+}
+
 // send a message using mavlink, handling message queueing
 void GCS_MAVLINK::send_message(enum ap_message id)
 {
